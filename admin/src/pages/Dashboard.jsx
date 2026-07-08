@@ -230,7 +230,9 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
       });
       toast.success('Tải ảnh thành công', { id: 'upload' });
     } catch (err) {
-      toast.error('Lỗi khi tải ảnh', { id: 'upload' });
+      const msg = err.response?.data?.message || err.message || 'Lỗi khi tải ảnh';
+      console.error('Upload error:', err.response?.status, msg);
+      toast.error(msg, { id: 'upload' });
     }
   };
 
@@ -288,7 +290,9 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
       toast.success('Cập nhật mẫu thành công', { id: 'template-upload' });
       fetchTemplates(); // refresh
     } catch (err) {
-      toast.error('Lỗi tải ảnh lên', { id: 'template-upload' });
+      const msg = err.response?.data?.message || err.message || 'Lỗi tải ảnh lên';
+      console.error('Template upload error:', err.response?.status, msg);
+      toast.error(msg, { id: 'template-upload' });
     }
   };
 
@@ -457,7 +461,9 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
       setBannerForm(prev => ({ ...prev, imageUrl: uploadRes.data.url }));
       toast.success('Tải ảnh thành công', { id: 'banner-upload' });
     } catch (err) {
-      toast.error('Lỗi tải ảnh lên', { id: 'banner-upload' });
+      const msg = err.response?.data?.message || err.message || 'Lỗi tải ảnh lên';
+      console.error('Banner upload error:', err.response?.status, msg);
+      toast.error(msg, { id: 'banner-upload' });
     }
   };
 
@@ -521,7 +527,9 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
       setNewsForm(prev => ({ ...prev, imageUrl: uploadRes.data.url }));
       toast.success('Tải ảnh thành công', { id: 'news-upload' });
     } catch (err) {
-      toast.error('Lỗi tải ảnh lên', { id: 'news-upload' });
+      const msg = err.response?.data?.message || err.message || 'Lỗi tải ảnh lên';
+      console.error('News upload error:', err.response?.status, msg);
+      toast.error(msg, { id: 'news-upload' });
     }
   };
 

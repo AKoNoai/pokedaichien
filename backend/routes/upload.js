@@ -34,8 +34,9 @@ const getBackendBaseUrl = (req) => {
 router.post('/', auth, (req, res) => {
   upload.single('image')(req, res, async (multerErr) => {
     if (multerErr) {
-      console.error('❌ Multer error:', multerErr.message);
-      return res.status(400).json({ message: multerErr.message });
+      console.error('❌ Multer error:', multerErr.message, multerErr.code);
+      const statusCode = multerErr.code === 'LIMIT_FILE_SIZE' ? 413 : 400;
+      return res.status(statusCode).json({ message: multerErr.message });
     }
 
     if (!req.file) {

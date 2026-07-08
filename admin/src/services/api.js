@@ -65,11 +65,7 @@ export const importWeather = (data) =>
 export const uploadImage = (file) => {
   const formData = new FormData();
   formData.append('image', file);
-  return API.post('/api/upload', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  });
+  return API.post('/api/upload', formData);
 };
 
 // Visitor Stats
