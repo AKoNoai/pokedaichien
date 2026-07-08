@@ -66,8 +66,9 @@ const Home = () => {
   return (
     <div className="home-container">
       {loading ? (
-        <div className="banner-placeholder" style={{ padding: '40px' }}>
-          <p>Đang tải Banner...</p>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 0' }}>
+          <div className="spinner"></div>
+          <p style={{ marginTop: '16px', fontWeight: 600, color: '#64748b' }}>Đang tải Banner...</p>
         </div>
       ) : banners.length > 0 ? (
         <div className="banner-carousel">
@@ -106,8 +107,9 @@ const Home = () => {
         <h2 className="news-title">Tin tức</h2>
         
         {newsLoading ? (
-          <div className="news-placeholder" style={{ padding: '20px' }}>
-            <p>Đang tải tin tức...</p>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 0' }}>
+            <div className="spinner"></div>
+            <p style={{ marginTop: '16px', fontWeight: 600, color: '#64748b' }}>Đang tải tin tức...</p>
           </div>
         ) : newsList.length > 0 ? (
           <div className="news-list">
