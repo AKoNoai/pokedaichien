@@ -7,8 +7,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  gap: 20px;
+  background: #ffffff;
+  gap: 0px;
   transition: opacity 0.5s ease;
 }
 
@@ -22,7 +22,7 @@
 }
 
 .global-loading-screen .loading-text {
-  color: white;
+  color: #000000;
   font-family: 'Outfit', sans-serif;
   font-size: 1.1rem;
   font-weight: 600;
@@ -30,12 +30,19 @@
 }
 
 @keyframes bounce {
-  from { transform: translateY(0); }
-  to { transform: translateY(-15px); }
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-15px);
+  }
 }
 
 /* ─── Reset & Base ─── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -47,11 +54,11 @@
   --text-main: #0f172a;
   --text-muted: #64748b;
   --border: #e2e8f0;
-  
+
   --primary: #3b82f6;
   --primary-hover: #2563eb;
   --primary-bg: #eff6ff;
-  
+
   --rare-color: #f59e0b;
   --rare-bg: #fffbeb;
   --normal-color: #10b981;
@@ -68,11 +75,11 @@
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --border: #334155;
-  
+
   --primary: #60a5fa;
   --primary-hover: #93c5fd;
   --primary-bg: rgba(59, 130, 246, 0.15);
-  
+
   --rare-color: #fbbf24;
   --rare-bg: rgba(245, 158, 11, 0.1);
   --normal-color: #34d399;
@@ -122,17 +129,19 @@ body {
 }
 
 .forecast-card {
-  background: #3273f6; /* Solid Blue as requested */
-  border-radius: 8px; /* Slightly sharper corners */
+  background: #3273f6;
+  /* Solid Blue as requested */
+  border-radius: 8px;
+  /* Slightly sharper corners */
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   color: #ffffff;
   border: none;
 }
 
 [data-theme='dark'] .forecast-card {
   /* Keep it blue even in dark mode */
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .fc-header {
@@ -198,7 +207,8 @@ body {
   display: flex;
   justify-content: space-around;
   margin-bottom: 5px;
-  color: #ffffff; /* Headers are outside the white box in the image? No, wait, in the image "Thường" and "Cao cấp" are white text on the blue background! */
+  color: #ffffff;
+  /* Headers are outside the white box in the image? No, wait, in the image "Thường" and "Cao cấp" are white text on the blue background! */
 }
 
 /* Wait, let's fix the pkmn-box structure to match the image exactly */
@@ -245,7 +255,7 @@ body {
   background: var(--bg-card);
   padding: 30px;
   border-radius: var(--radius-lg);
-  box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
   border: 1px solid var(--border);
 }
 
@@ -342,7 +352,7 @@ body {
   text-align: center;
   padding: 40px;
   color: var(--text-muted);
-  background: rgba(0,0,0,0.02);
+  background: rgba(0, 0, 0, 0.02);
   border-radius: var(--radius);
   font-style: italic;
 }
@@ -364,7 +374,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ─── Responsive ─── */
@@ -378,16 +390,16 @@ body {
   .forecast-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .weather-header h1 {
     font-size: 2rem;
   }
-  
+
   .chip {
     padding: 8px 14px;
     font-size: 0.85rem;
   }
-  
+
   .filter-section {
     padding: 20px;
   }
