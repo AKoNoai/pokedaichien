@@ -11,17 +11,23 @@ const API = axios.create({
 
 export const resolveImageUrl = (url) => {
   if (!url) return '';
-  if (/^https?:\/\//i.test(url) || url.startsWith('data:')) {
-    return url;
+  let finalUrl = url;
+  // Rewrite localhost:5000 to production backend if in production
+  if (import.meta.env.PROD && finalUrl.includes('localhost:5000')) {
+    finalUrl = finalUrl.replace(/https?:\/\/localhost:5000/g, 'https://pokedaichienbackend.vercel.app');
+  }
+
+  if (/^https?:\/\//i.test(finalUrl) || finalUrl.startsWith('data:')) {
+    return finalUrl;
   }
 
   const apiBase = getApiUrl();
   if (!apiBase) {
-    return url;
+    return finalUrl;
   }
 
   const normalizedBase = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase;
-  return `${normalizedBase}${url.startsWith('/') ? url : `/${url}`}`;
+  return `${normalizedBase}${finalUrl.startsWith('/') ? finalUrl : `/${finalUrl}`}`;
 };
 
 // Add auth token to requests
