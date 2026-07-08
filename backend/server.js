@@ -13,6 +13,8 @@ const adminRoutes = require('./routes/admin');
 const uploadRoutes = require('./routes/upload');
 const visitorRoutes = require('./routes/visitor');
 const templateRoutes = require('./routes/template');
+const bannerRoutes = require('./routes/banner');
+const newsRoutes = require('./routes/news');
 
 const app = express();
 
@@ -24,7 +26,7 @@ app.use(cors({
     // Allow all *.vercel.app subdomains
     if (origin.endsWith('.vercel.app')) return callback(null, true);
     // Allow localhost for development
-    if (origin.startsWith('http://localhost:')) return callback(null, true);
+    if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) return callback(null, true);
     // Allow explicitly configured origins
     const allowed = [process.env.FRONTEND_URL, process.env.ADMIN_URL].filter(Boolean);
     if (allowed.includes(origin)) return callback(null, true);
@@ -52,6 +54,8 @@ app.use('/api/weather', weatherRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/visitors', visitorRoutes);
 app.use('/api/templates', templateRoutes);
+app.use('/api/banners', bannerRoutes);
+app.use('/api/news', newsRoutes);
 
 // Health check
 app.get('/', (req, res) => {

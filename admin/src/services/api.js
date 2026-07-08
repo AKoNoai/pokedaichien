@@ -83,4 +83,16 @@ export const getTemplates = () =>
 export const updateTemplate = (data) =>
   API.post('/api/templates', data);
 
+// Banners
+export const getBanners = () => API.get('/api/banners');
+export const createBanner = (data) => API.post('/api/banners', data);
+export const updateBanner = (id, data) => API.put(`/api/banners/${id}`, data);
+export const deleteBanner = (id) => API.delete(`/api/banners/${id}`);
+
+// News
+export const getNews = () => API.get('/api/news');
+export const createNews = (data) => API.post('/api/news', data);
+export const updateNews = (id, data) => API.put(`/api/news/${id}`, data);
+export const deleteNews = (id) => API.delete(`/api/news/${id}`);
+
 export default API;

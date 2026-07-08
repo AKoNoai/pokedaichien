@@ -1,0 +1,156 @@
+.main-header {
+  background-color: #ffffff;
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.header-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+.header-icons {
+  display: flex;
+  gap: 15px;
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.header-icons i {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.header-icons i:hover {
+  color: #333;
+}
+
+.header-nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pokeball {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(to bottom, #ee1515 50%, #ffffff 50%);
+  border: 2px solid #000;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pokeball::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -2px;
+  right: -2px;
+  height: 4px;
+  background-color: #000;
+  transform: translateY(-50%);
+}
+
+.pokeball-button {
+  width: 12px;
+  height: 12px;
+  background: #ffffff;
+  border: 2px solid #000;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.logo-text {
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+}
+
+.header-nav {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: #000;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+  padding: 5px;
+  z-index: 1000;
+}
+
+/* Mobile responsive styling */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .header-nav {
+    position: fixed;
+    top: 70px; /* Adjust according to header height */
+    left: -100%;
+    width: 250px;
+    height: calc(100vh - 70px);
+    background-color: #ffffff;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 30px 20px;
+    gap: 20px;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+    transition: left 0.3s ease-in-out;
+    z-index: 998;
+  }
+
+  .header-nav.open {
+    left: 0;
+  }
+
+  .nav-link {
+    font-size: 16px;
+    width: 100%;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+}

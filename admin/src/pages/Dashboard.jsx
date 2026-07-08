@@ -10,7 +10,15 @@ import {
   resolveImageUrl,
   getVisitorStats,
   getTemplates,
-  updateTemplate
+  updateTemplate,
+  getBanners,
+  createBanner,
+  updateBanner,
+  deleteBanner,
+  getNews,
+  createNews,
+  updateNews,
+  deleteNews
 } from '../services/api';
 
 const WEATHER_TYPES = [
@@ -65,7 +73,7 @@ const TimePicker = ({ label, value, onChange }) => {
 
 export default function Dashboard({ token, onLogout, theme, setTheme }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activePage, setActivePage] = useState('weather');
+  const [activePage, setActivePage] = useState('home');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -100,6 +108,20 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
     rarePokemons: []
   });
 
+  // Banner State
+  const [banners, setBanners] = useState([]);
+  const [bannerLoading, setBannerLoading] = useState(false);
+  const [showBannerModal, setShowBannerModal] = useState(false);
+  const [editingBanner, setEditingBanner] = useState(null);
+  const [bannerForm, setBannerForm] = useState({ imageUrl: '', link: '', isActive: true, order: 0 });
+
+  // News State
+  const [newsList, setNewsList] = useState([]);
+  const [newsLoading, setNewsLoading] = useState(false);
+  const [showNewsModal, setShowNewsModal] = useState(false);
+  const [editingNews, setEditingNews] = useState(null);
+  const [newsForm, setNewsForm] = useState({ title: '', content: '', imageUrl: '', isActive: true });
+
   // Import State
   const [importJson, setImportJson] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -128,7 +150,13 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
       const res = await getVisitorStats();
       setVisitorStats(res.data);
     } catch (err) {
-      toast.error('Lỗi khi tải thống kê truy cập');
+      console.error(err);
+      if (err.response?.status === 401) {
+        toast.error('Phiên đăng nhập đã hết hạn');
+        onLogout();
+      } else {
+        toast.error('Lỗi khi tải thống kê: ' + (err.response?.data?.message || err.message));
+      }
     } finally {
       setVisitorLoading(false);
     }
@@ -155,8 +183,36 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
       fetchVisitorStats();
     } else if (activePage === 'templates') {
       fetchTemplates();
+    } else if (activePage === 'home') {
+      fetchBanners();
+    } else if (activePage === 'news') {
+      fetchNewsList();
     }
   }, [activePage, fetchVisitorStats, fetchTemplates]);
+
+  const fetchNewsList = async () => {
+    setNewsLoading(true);
+    try {
+      const res = await getNews();
+      setNewsList(res.data || []);
+    } catch (err) {
+      toast.error('Lỗi khi tải danh sách tin tức');
+    } finally {
+      setNewsLoading(false);
+    }
+  };
+
+  const fetchBanners = async () => {
+    setBannerLoading(true);
+    try {
+      const res = await getBanners();
+      setBanners(res.data || []);
+    } catch (err) {
+      toast.error('Lỗi khi tải danh sách banner');
+    } finally {
+      setBannerLoading(false);
+    }
+  };
 
   // Handlers
   const handleImageUpload = async (e, type, wIndex) => {
@@ -341,6 +397,134 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
     }
   };
 
+  // Banner Handlers
+  const handleOpenAddBanner = () => {
+    setEditingBanner(null);
+    setBannerForm({ imageUrl: '', link: '', isActive: true, order: 0 });
+    setShowBannerModal(true);
+  };
+
+  const handleOpenEditBanner = (item) => {
+    setEditingBanner(item);
+    setBannerForm({
+      imageUrl: item.imageUrl,
+      link: item.link || '',
+      isActive: item.isActive,
+      order: item.order || 0
+    });
+    setShowBannerModal(true);
+  };
+
+  const handleDeleteBanner = async (id) => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa banner này?')) {
+      try {
+        await deleteBanner(id);
+        toast.success('Xóa thành công');
+        fetchBanners();
+      } catch (err) {
+        toast.error('Xóa thất bại');
+      }
+    }
+  };
+
+  const handleSubmitBanner = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      if (editingBanner) {
+        await updateBanner(editingBanner._id, bannerForm);
+        toast.success('Cập nhật thành công');
+      } else {
+        await createBanner(bannerForm);
+        toast.success('Thêm mới thành công');
+      }
+      setShowBannerModal(false);
+      fetchBanners();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Có lỗi xảy ra');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleBannerImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      toast.loading('Đang tải ảnh lên...', { id: 'banner-upload' });
+      const uploadRes = await uploadImage(file);
+      setBannerForm(prev => ({ ...prev, imageUrl: uploadRes.data.url }));
+      toast.success('Tải ảnh thành công', { id: 'banner-upload' });
+    } catch (err) {
+      toast.error('Lỗi tải ảnh lên', { id: 'banner-upload' });
+    }
+  };
+
+  // News Handlers
+  const handleOpenAddNews = () => {
+    setEditingNews(null);
+    setNewsForm({ title: '', content: '', imageUrl: '', isActive: true });
+    setShowNewsModal(true);
+  };
+
+  const handleOpenEditNews = (item) => {
+    setEditingNews(item);
+    setNewsForm({
+      title: item.title,
+      content: item.content,
+      imageUrl: item.imageUrl || '',
+      isActive: item.isActive
+    });
+    setShowNewsModal(true);
+  };
+
+  const handleDeleteNews = async (id) => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa bản tin này?')) {
+      try {
+        await deleteNews(id);
+        toast.success('Xóa thành công');
+        fetchNewsList();
+      } catch (err) {
+        toast.error('Xóa thất bại');
+      }
+    }
+  };
+
+  const handleSubmitNews = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      if (editingNews) {
+        await updateNews(editingNews._id, newsForm);
+        toast.success('Cập nhật thành công');
+      } else {
+        await createNews(newsForm);
+        toast.success('Thêm mới thành công');
+      }
+      setShowNewsModal(false);
+      fetchNewsList();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Có lỗi xảy ra');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleNewsImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      toast.loading('Đang tải ảnh lên...', { id: 'news-upload' });
+      const uploadRes = await uploadImage(file);
+      setNewsForm(prev => ({ ...prev, imageUrl: uploadRes.data.url }));
+      toast.success('Tải ảnh thành công', { id: 'news-upload' });
+    } catch (err) {
+      toast.error('Lỗi tải ảnh lên', { id: 'news-upload' });
+    }
+  };
+
   // Filtering & Pagination
   const filteredData = data.filter(item => {
     const matchesSearch = item.weatherType.toLowerCase().includes(search.toLowerCase());
@@ -391,16 +575,28 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
         </div>
         
         <div className="sidebar-nav">
-          <button className={`nav-item ${activePage === 'weather' ? 'active' : ''}`} onClick={() => { setActivePage('weather'); setIsSidebarOpen(false); }}>
-            <i className="fa-solid fa-cloud-sun nav-icon"></i>
-            Thời Tiết
+          <button className={`nav-item ${activePage === 'home' ? 'active' : ''}`} onClick={() => { setActivePage('home'); setIsSidebarOpen(false); }}>
+            <i className="fa-solid fa-house nav-icon"></i> Trang Chủ
           </button>
-            <button className={`nav-item ${activePage === 'visitors' ? 'active' : ''}`} onClick={() => { setActivePage('visitors'); setIsSidebarOpen(false); }}>
-              <i className="fa-solid fa-chart-line nav-icon"></i> Thống Kê
-            </button>
-            <button className={`nav-item ${activePage === 'templates' ? 'active' : ''}`} onClick={() => { setActivePage('templates'); setIsSidebarOpen(false); }}>
-              <i className="fa-solid fa-image nav-icon"></i> Mẫu Thời Tiết
-            </button>
+          <button className={`nav-item ${activePage === 'weather' ? 'active' : ''}`} onClick={() => { setActivePage('weather'); setIsSidebarOpen(false); }}>
+            <i className="fa-solid fa-cloud-sun nav-icon"></i> Thời Tiết
+          </button>
+          <button className={`nav-item ${activePage === 'server_schedule' ? 'active' : ''}`} onClick={() => { setActivePage('server_schedule'); setIsSidebarOpen(false); }}>
+            <i className="fa-solid fa-calendar-alt nav-icon"></i> Lịch ra server
+          </button>
+          <button className={`nav-item ${activePage === 'draw_x10' ? 'active' : ''}`} onClick={() => { setActivePage('draw_x10'); setIsSidebarOpen(false); }}>
+            <i className="fa-solid fa-gift nav-icon"></i> Rút x10
+          </button>
+          <button className={`nav-item ${activePage === 'news' ? 'active' : ''}`} onClick={() => { setActivePage('news'); setIsSidebarOpen(false); }}>
+            <i className="fa-solid fa-newspaper nav-icon"></i> Tin tức
+          </button>
+          <div style={{ borderTop: '1px solid var(--border)', margin: '10px 15px' }}></div>
+          <button className={`nav-item ${activePage === 'visitors' ? 'active' : ''}`} onClick={() => { setActivePage('visitors'); setIsSidebarOpen(false); }}>
+            <i className="fa-solid fa-chart-line nav-icon"></i> Thống Kê
+          </button>
+          <button className={`nav-item ${activePage === 'templates' ? 'active' : ''}`} onClick={() => { setActivePage('templates'); setIsSidebarOpen(false); }}>
+            <i className="fa-solid fa-image nav-icon"></i> Mẫu Thời Tiết
+          </button>
         </div>
 
         <div className="sidebar-footer">
@@ -417,6 +613,367 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
 
       {/* Main Content */}
       <div className="admin-main">
+        {activePage === 'home' && (
+          <>
+            <div className="page-header">
+              <div>
+                <h1>Quản lý Trang Chủ (Banner)</h1>
+                <p>Thêm, sửa, xóa Banner trên trang chủ.</p>
+              </div>
+              <div className="header-actions">
+                <button className="btn btn-primary" onClick={handleOpenAddBanner}>
+                  <i className="fa-solid fa-plus"></i> Thêm Banner
+                </button>
+              </div>
+            </div>
+
+            <div className="table-wrapper">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Ảnh Banner</th>
+                    <th>Liên kết</th>
+                    <th>Thứ tự</th>
+                    <th>Trạng thái</th>
+                    <th style={{ width: '120px' }}>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bannerLoading ? (
+                    <tr>
+                      <td colSpan="5" className="tbl-empty">
+                        <div className="spinner"></div>
+                      </td>
+                    </tr>
+                  ) : banners.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="tbl-empty">Chưa có banner nào</td>
+                    </tr>
+                  ) : (
+                    banners.map(item => (
+                      <tr key={item._id}>
+                        <td>
+                          <img src={resolveImageUrl(item.imageUrl)} alt="Banner" style={{ width: '120px', height: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border)' }} />
+                        </td>
+                        <td>
+                          {item.link ? <a href={item.link} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', textDecoration: 'none' }}>{item.link}</a> : <i>Không có</i>}
+                        </td>
+                        <td>{item.order}</td>
+                        <td>
+                          <span className={`badge ${item.isActive ? 'badge-weather' : ''}`} style={!item.isActive ? { background: '#64748b', color: '#fff' } : {}}>
+                            {item.isActive ? 'Hoạt động' : 'Đã ẩn'}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="actions-cell">
+                            <button className="btn btn-ghost btn-sm" onClick={() => handleOpenEditBanner(item)}>
+                              <i className="fa-solid fa-pen"></i>
+                            </button>
+                            <button className="btn btn-danger btn-sm" onClick={() => handleDeleteBanner(item._id)}>
+                              <i className="fa-solid fa-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+
+              {/* Mobile Card List for Banners */}
+              <div className="weather-card-list">
+                {!bannerLoading && banners.map(item => (
+                  <div className="weather-mobile-card" key={item._id}>
+                    <div className="wmc-top">
+                      <div className="wmc-type">
+                        <span className={`badge ${item.isActive ? 'badge-weather' : ''}`} style={!item.isActive ? { background: '#64748b', color: '#fff' } : {}}>
+                          {item.isActive ? 'Hoạt động' : 'Đã ẩn'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '13px', fontWeight: 600 }}>Thứ tự: {item.order}</div>
+                    </div>
+                    <div style={{ margin: '5px 0' }}>
+                      <img src={resolveImageUrl(item.imageUrl)} alt="Banner" style={{ width: '100%', height: 'auto', maxHeight: '150px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border)' }} />
+                    </div>
+                    <div className="wmc-rows">
+                      <div className="wmc-row" style={{ wordBreak: 'break-all' }}>
+                        <span className="wmc-label">Liên kết:</span>
+                        {item.link ? <a href={item.link} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', textDecoration: 'none' }}>{item.link}</a> : <i>Không có</i>}
+                      </div>
+                    </div>
+                    <div className="wmc-actions">
+                      <button className="btn btn-ghost btn-sm" onClick={() => handleOpenEditBanner(item)}>
+                        Sửa
+                      </button>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDeleteBanner(item._id)}>
+                        Xóa
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Banner Modal */}
+            {showBannerModal && (
+              <div className="modal-overlay">
+                <div className="modal-content" style={{ maxWidth: '500px' }}>
+                  <div className="modal-header">
+                    <h2>{editingBanner ? 'Cập nhật Banner' : 'Thêm Banner Mới'}</h2>
+                    <button className="btn-close" onClick={() => setShowBannerModal(false)}><i className="fa-solid fa-xmark"></i></button>
+                  </div>
+                  <form onSubmit={handleSubmitBanner} className="modal-body">
+                    <div className="form-group">
+                      <label>Ảnh Banner</label>
+                      {bannerForm.imageUrl && (
+                        <div style={{ marginBottom: '10px' }}>
+                          <img src={resolveImageUrl(bannerForm.imageUrl)} alt="Banner preview" style={{ width: '100%', height: 'auto', maxHeight: '150px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border)' }} />
+                        </div>
+                      )}
+                      <input type="file" accept="image/*" onChange={handleBannerImageUpload} className="form-control" style={{ padding: '8px' }} />
+                      {!bannerForm.imageUrl && <p style={{ fontSize: '0.85rem', color: 'red', marginTop: '5px' }}>Vui lòng tải ảnh lên</p>}
+                    </div>
+
+                    <div className="form-group">
+                      <label>Đường dẫn liên kết (Tùy chọn)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="https://..."
+                        value={bannerForm.link}
+                        onChange={(e) => setBannerForm({...bannerForm, link: e.target.value})}
+                      />
+                    </div>
+
+                    <div className="form-row">
+                      <div className="form-group" style={{ flex: 1 }}>
+                        <label>Thứ tự hiển thị</label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          value={bannerForm.order}
+                          onChange={(e) => setBannerForm({...bannerForm, order: Number(e.target.value)})}
+                        />
+                      </div>
+                      <div className="form-group" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px', paddingTop: '30px' }}>
+                        <input
+                          type="checkbox"
+                          id="bannerActive"
+                          checked={bannerForm.isActive}
+                          onChange={(e) => setBannerForm({...bannerForm, isActive: e.target.checked})}
+                          style={{ width: '20px', height: '20px' }}
+                        />
+                        <label htmlFor="bannerActive" style={{ margin: 0, cursor: 'pointer' }}>Hiển thị Banner</label>
+                      </div>
+                    </div>
+
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-ghost" onClick={() => setShowBannerModal(false)}>Hủy</button>
+                      <button type="submit" className="btn btn-primary" disabled={isSubmitting || !bannerForm.imageUrl}>
+                        {isSubmitting ? <><i className="fa-solid fa-spinner fa-spin"></i> Đang lưu...</> : 'Lưu Banner'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {activePage === 'server_schedule' && (
+          <div className="page-header">
+            <div>
+              <h1>Quản lý Lịch ra server</h1>
+              <p>Tính năng đang được phát triển...</p>
+            </div>
+          </div>
+        )}
+
+        {activePage === 'draw_x10' && (
+          <div className="page-header">
+            <div>
+              <h1>Quản lý Rút x10</h1>
+              <p>Tính năng đang được phát triển...</p>
+            </div>
+          </div>
+        )}
+
+        {activePage === 'news' && (
+          <>
+            <div className="page-header">
+              <div>
+                <h1>Quản lý Tin Tức</h1>
+                <p>Thêm, sửa, xóa bài viết tin tức.</p>
+              </div>
+              <div className="header-actions">
+                <button className="btn btn-primary" onClick={handleOpenAddNews}>
+                  <i className="fa-solid fa-plus"></i> Thêm Bản Tin
+                </button>
+              </div>
+            </div>
+
+            <div className="table-wrapper">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Ảnh</th>
+                    <th>Tiêu đề</th>
+                    <th>Ngày đăng</th>
+                    <th>Trạng thái</th>
+                    <th style={{ width: '120px' }}>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {newsLoading ? (
+                    <tr>
+                      <td colSpan="5" className="tbl-empty">
+                        <div className="spinner"></div>
+                      </td>
+                    </tr>
+                  ) : newsList.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="tbl-empty">Chưa có tin tức nào</td>
+                    </tr>
+                  ) : (
+                    newsList.map(item => (
+                      <tr key={item._id}>
+                        <td>
+                          {item.imageUrl ? (
+                            <img src={resolveImageUrl(item.imageUrl)} alt="News" style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border)' }} />
+                          ) : (
+                            <div style={{ width: '80px', height: '60px', background: '#e2e8f0', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <i className="fa-solid fa-image" style={{ color: '#94a3b8' }}></i>
+                            </div>
+                          )}
+                        </td>
+                        <td style={{ maxWidth: '250px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <span style={{ fontWeight: '500' }}>{item.title}</span>
+                        </td>
+                        <td>{new Date(item.createdAt).toLocaleDateString('vi-VN')}</td>
+                        <td>
+                          <span className={`badge ${item.isActive ? 'badge-weather' : ''}`} style={!item.isActive ? { background: '#64748b', color: '#fff' } : {}}>
+                            {item.isActive ? 'Hoạt động' : 'Đã ẩn'}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="actions-cell">
+                            <button className="btn btn-ghost btn-sm" onClick={() => handleOpenEditNews(item)}>
+                              <i className="fa-solid fa-pen"></i>
+                            </button>
+                            <button className="btn btn-danger btn-sm" onClick={() => handleDeleteNews(item._id)}>
+                              <i className="fa-solid fa-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+
+              {/* Mobile Card List for News */}
+              <div className="weather-card-list">
+                {!newsLoading && newsList.map(item => (
+                  <div className="weather-mobile-card" key={item._id}>
+                    <div className="wmc-top">
+                      <span className={`badge ${item.isActive ? 'badge-weather' : ''}`} style={!item.isActive ? { background: '#64748b', color: '#fff' } : {}}>
+                        {item.isActive ? 'Hoạt động' : 'Đã ẩn'}
+                      </span>
+                      <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{new Date(item.createdAt).toLocaleDateString('vi-VN')}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '12px', margin: '8px 0' }}>
+                      {item.imageUrl ? (
+                        <img src={resolveImageUrl(item.imageUrl)} alt="News" style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--border)' }} />
+                      ) : (
+                        <div style={{ width: '80px', height: '60px', background: '#e2e8f0', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <i className="fa-solid fa-image" style={{ color: '#94a3b8' }}></i>
+                        </div>
+                      )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: '700', fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', maxHeight: '36px', lineHeight: '1.5' }}>
+                          {item.content}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="wmc-actions">
+                      <button className="btn btn-ghost btn-sm" onClick={() => handleOpenEditNews(item)}>
+                        Sửa
+                      </button>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDeleteNews(item._id)}>
+                        Xóa
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* News Modal */}
+            {showNewsModal && (
+              <div className="modal-overlay">
+                <div className="modal-content" style={{ maxWidth: '600px' }}>
+                  <div className="modal-header">
+                    <h2>{editingNews ? 'Cập nhật Bản Tin' : 'Thêm Bản Tin Mới'}</h2>
+                    <button className="btn-close" onClick={() => setShowNewsModal(false)}><i className="fa-solid fa-xmark"></i></button>
+                  </div>
+                  <form onSubmit={handleSubmitNews} className="modal-body">
+                    <div className="form-group">
+                      <label>Tiêu đề</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        required
+                        value={newsForm.title}
+                        onChange={(e) => setNewsForm({...newsForm, title: e.target.value})}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Nội dung</label>
+                      <textarea
+                        className="form-control"
+                        required
+                        rows="6"
+                        value={newsForm.content}
+                        onChange={(e) => setNewsForm({...newsForm, content: e.target.value})}
+                      ></textarea>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Ảnh bìa (Tùy chọn)</label>
+                      {newsForm.imageUrl && (
+                        <div style={{ marginBottom: '10px' }}>
+                          <img src={resolveImageUrl(newsForm.imageUrl)} alt="News preview" style={{ width: '100%', height: 'auto', maxHeight: '150px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border)' }} />
+                        </div>
+                      )}
+                      <input type="file" accept="image/*" onChange={handleNewsImageUpload} className="form-control" style={{ padding: '8px' }} />
+                    </div>
+
+                    <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingTop: '10px' }}>
+                      <input
+                        type="checkbox"
+                        id="newsActive"
+                        checked={newsForm.isActive}
+                        onChange={(e) => setNewsForm({...newsForm, isActive: e.target.checked})}
+                        style={{ width: '20px', height: '20px' }}
+                      />
+                      <label htmlFor="newsActive" style={{ margin: 0, cursor: 'pointer' }}>Hiển thị bản tin</label>
+                    </div>
+
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-ghost" onClick={() => setShowNewsModal(false)}>Hủy</button>
+                      <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                        {isSubmitting ? <><i className="fa-solid fa-spinner fa-spin"></i> Đang lưu...</> : 'Lưu Bản Tin'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
         {activePage === 'weather' && (
           <>
             <div className="page-header">
@@ -840,6 +1397,72 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
                 })}
               </tbody>
             </table>
+
+            {/* Mobile Card List for Weather Templates */}
+            <div className="weather-card-list">
+              {!templateLoading && WEATHER_TYPES.map(type => {
+                const tmpl = templates.find(t => t.weatherType === type);
+                return (
+                  <div className="weather-mobile-card" key={type}>
+                    <div className="wmc-top">
+                      <div className="wmc-type">
+                        <span className="badge badge-weather"><i className={ICONS?.[type] || 'fa-solid fa-cloud'}></i> {type}</span>
+                      </div>
+                    </div>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', margin: '8px 0' }}>
+                      {/* Normal Grid */}
+                      <div style={{ borderBottom: '1px dashed var(--border)', paddingBottom: '8px' }}>
+                        <div style={{ fontSize: '12px', fontWeight: 600, marginBottom: '6px', color: 'var(--muted)' }}>Khung thường:</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          {tmpl?.normalImage ? (
+                            <>
+                              <img src={resolveImageUrl(tmpl.normalImage)} alt="Normal Grid" style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border)' }} />
+                              <label className="btn btn-ghost btn-sm" style={{ cursor: 'pointer', margin: 0, padding: '5px 10px' }} title="Sửa ảnh">
+                                <i className="fa-solid fa-pen"></i> Sửa
+                                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleTemplateImageUpload(e, type, 'normalImage')} />
+                              </label>
+                              <button className="btn btn-danger btn-sm" style={{ padding: '5px 10px' }} onClick={() => handleTemplateImageDelete(type, 'normalImage')} title="Xóa ảnh">
+                                <i className="fa-solid fa-trash"></i> Xóa
+                              </button>
+                            </>
+                          ) : (
+                            <label className="btn btn-ghost btn-sm" style={{ cursor: 'pointer', margin: 0 }}>
+                              <i className="fa-solid fa-upload"></i> Tải ảnh
+                              <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleTemplateImageUpload(e, type, 'normalImage')} />
+                            </label>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Rare Grid */}
+                      <div>
+                        <div style={{ fontSize: '12px', fontWeight: 600, marginBottom: '6px', color: 'var(--muted)' }}>Khung cao cấp:</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          {tmpl?.rareImage ? (
+                            <>
+                              <img src={resolveImageUrl(tmpl.rareImage)} alt="Rare Grid" style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border)' }} />
+                              <label className="btn btn-ghost btn-sm" style={{ cursor: 'pointer', margin: 0, padding: '5px 10px' }} title="Sửa ảnh">
+                                <i className="fa-solid fa-pen"></i> Sửa
+                                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleTemplateImageUpload(e, type, 'rareImage')} />
+                              </label>
+                              <button className="btn btn-danger btn-sm" style={{ padding: '5px 10px' }} onClick={() => handleTemplateImageDelete(type, 'rareImage')} title="Xóa ảnh">
+                                <i className="fa-solid fa-trash"></i> Xóa
+                              </button>
+                            </>
+                          ) : (
+                            <label className="btn btn-ghost btn-sm" style={{ cursor: 'pointer', margin: 0 }}>
+                              <i className="fa-solid fa-upload"></i> Tải ảnh
+                              <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleTemplateImageUpload(e, type, 'rareImage')} />
+                            </label>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </>
       )}

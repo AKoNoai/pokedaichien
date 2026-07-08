@@ -311,7 +311,7 @@ const WeatherDisplay = () => {
           ) : (
             <div className="results-grid">
               {filteredData.map(item => (
-                <div key={item._id} className="result-card" onClick={() => navigate('/chitiet', { state: { selectedResult: item, templates } })} style={{ cursor: 'pointer' }}>
+                <div key={item._id} className="result-card" onClick={() => navigate('/thoitiet/chitiet', { state: { selectedResult: item, templates } })} style={{ cursor: 'pointer' }}>
                   <div className="rc-icon">
                     <i className={ICONS[item.weatherType]}></i>
                   </div>
