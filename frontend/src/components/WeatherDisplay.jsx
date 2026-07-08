@@ -36,7 +36,7 @@ const WeatherDisplay = () => {
   // Filters
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedType, setSelectedType] = useState('Mưa giông');
-  
+
   const fetchData = useCallback(async () => {
     try {
       // Fetch all weather data and templates
@@ -103,9 +103,9 @@ const WeatherDisplay = () => {
   const currentYear = new Date().getFullYear();
   const filteredData = data.filter(item => {
     const itemDate = new Date(item.date);
-    return itemDate.getMonth() + 1 === selectedMonth && 
-           itemDate.getFullYear() === currentYear &&
-           item.weatherType === selectedType;
+    return itemDate.getMonth() + 1 === selectedMonth &&
+      itemDate.getFullYear() === currentYear &&
+      item.weatherType === selectedType;
   });
 
   if (loading) {
@@ -260,13 +260,13 @@ const WeatherDisplay = () => {
       {/* Filter Section */}
       <div className="filter-section">
         <h2 className="filter-title">Tra cứu Lịch Thời Tiết</h2>
-        
+
         <div className="filter-group">
           <div className="filter-label">Chọn Tháng</div>
           <div className="chip-row">
             {MONTHS.map(m => (
-              <button 
-                key={m} 
+              <button
+                key={m}
                 className={`chip ${selectedMonth === m ? 'active' : ''}`}
                 onClick={() => setSelectedMonth(m)}
               >
@@ -280,8 +280,8 @@ const WeatherDisplay = () => {
           <div className="filter-label">Loại Thời Tiết</div>
           <div className="chip-row">
             {WEATHER_TYPES.map(type => (
-              <button 
-                key={type} 
+              <button
+                key={type}
                 className={`chip ${selectedType === type ? 'active' : ''}`}
                 onClick={() => setSelectedType(type)}
               >
@@ -294,7 +294,7 @@ const WeatherDisplay = () => {
         {/* Results */}
         <div className="results-container">
           <div className="filter-label" style={{ marginTop: '30px' }}>Kết Quả</div>
-          
+
           {filteredData.length === 0 ? (
             <div className="results-empty">
               Không có dữ liệu {selectedType} trong Tháng {selectedMonth}.
