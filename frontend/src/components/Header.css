@@ -102,12 +102,18 @@
   font-weight: 700;
   font-size: 14px;
   font-family: 'Arial Narrow', Arial, sans-serif;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
   white-space: nowrap;
+  display: inline-block;
 }
 
 .nav-link:hover, .nav-link.active {
   color: #000;
+}
+
+.nav-link:active {
+  transform: scale(0.9);
+  opacity: 0.8;
 }
 
 .menu-toggle {

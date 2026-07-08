@@ -13,13 +13,25 @@
   transition: opacity 0.5s ease;
 }
 
+.global-loading-screen::before {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(253, 203, 88, 0.4) 0%, transparent 60%);
+  border-radius: 50%;
+  animation: pulseGlow 2s ease-in-out infinite alternate;
+  z-index: -1;
+}
+
 .global-loading-screen.fade-out {
   opacity: 0;
   pointer-events: none;
 }
 
 .global-loading-screen .loading-icon {
-  animation: bounce 0.6s ease infinite alternate;
+  animation: floatingPika 1.5s ease-in-out infinite alternate;
+  filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
 }
 
 .global-loading-screen .loading-text {
@@ -29,16 +41,22 @@
   font-weight: 600;
   letter-spacing: 1px;
   margin-top: -60px;
+  animation: pulseText 1.5s infinite;
 }
 
-@keyframes bounce {
-  from {
-    transform: translateY(0);
-  }
+@keyframes floatingPika {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-15px) scale(1.05); }
+}
 
-  to {
-    transform: translateY(-15px);
-  }
+@keyframes pulseGlow {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  100% { transform: scale(1.3); opacity: 1; }
+}
+
+@keyframes pulseText {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 /* ─── Reset & Base ─── */
