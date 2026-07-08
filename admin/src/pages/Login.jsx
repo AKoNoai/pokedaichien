@@ -30,7 +30,7 @@ export default function Login({ onLogin }) {
     <div className="login-page">
       <div className="login-box">
         <div className="login-logo">
-          <span className="logo-icon">⛅</span>
+          <img src="/pikachuchay.gif" alt="Logo" className="logo-icon" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
           <h1>Quản Trị Thời Tiết</h1>
           <p>Poke Đại Chiến</p>
         </div>
