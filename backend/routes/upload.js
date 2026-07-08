@@ -30,7 +30,15 @@ const getBackendBaseUrl = (req) => {
   return `${protocol}://${req.get('host')}`;
 };
 
-// POST /api/upload - Upload an image locally (Admin only)
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// POST /api/upload - Upload an image locally or to Cloudinary (Admin only)
 router.post('/', auth, (req, res) => {
   upload.single('image')(req, res, async (multerErr) => {
     if (multerErr) {
@@ -44,26 +52,46 @@ router.post('/', auth, (req, res) => {
     }
 
     try {
-      const uploadsDir = path.resolve(__dirname, '..', 'uploads');
-      await fs.mkdir(uploadsDir, { recursive: true });
+      if (process.env.CLOUDINARY_CLOUD_NAME) {
+        // Upload to Cloudinary
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: 'pokedaichien_uploads' },
+          (error, result) => {
+            if (error) {
+              console.error('❌ Cloudinary upload error:', error);
+              return res.status(500).json({ message: 'Lỗi tải ảnh lên Cloudinary: ' + error.message });
+            }
+            return res.status(200).json({
+              message: 'Tải ảnh thành công',
+              provider: 'cloudinary',
+              url: result.secure_url
+            });
+          }
+        );
+        uploadStream.end(req.file.buffer);
+      } else {
+        // Fallback to local upload
+        const uploadsDir = path.resolve(__dirname, '..', 'uploads');
+        await fs.mkdir(uploadsDir, { recursive: true });
 
-      const safeName = req.file.originalname
-        .replace(/[^a-zA-Z0-9._-]/g, '_')
-        .replace(/_+/g, '_');
-      const localName = `${Date.now()}-${safeName}`;
-      const localPath = path.join(uploadsDir, localName);
+        const safeName = req.file.originalname
+          .replace(/[^a-zA-Z0-9._-]/g, '_')
+          .replace(/_+/g, '_');
+        const localName = `${Date.now()}-${safeName}`;
+        const localPath = path.join(uploadsDir, localName);
 
-      await fs.writeFile(localPath, req.file.buffer);
+        await fs.writeFile(localPath, req.file.buffer);
 
-      return res.status(200).json({
-        message: 'Tải ảnh thành công',
-        provider: 'local',
-        url: `${getBackendBaseUrl(req)}/uploads/${encodeURIComponent(localName)}`
-      });
-    } catch (localError) {
-      console.error('❌ Local upload error:', localError.message);
+        return res.status(200).json({
+          message: 'Tải ảnh thành công',
+          provider: 'local',
+          url: `${getBackendBaseUrl(req)}/uploads/${encodeURIComponent(localName)}`
+        });
+      }
+    } catch (uploadError) {
+      console.error('❌ Upload error:', uploadError.message);
       return res.status(500).json({
-        message: 'Không thể lưu ảnh cục bộ: ' + localError.message
+        message: 'Không thể lưu ảnh: ' + uploadError.message
       });
     }
   });
