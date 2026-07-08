@@ -1,0 +1,358 @@
+/* ─── Reset & Base ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-body: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-bg: #eff6ff;
+  
+  --rare-color: #f59e0b;
+  --rare-bg: #fffbeb;
+  --normal-color: #10b981;
+  --normal-bg: #ecfdf5;
+
+  --radius: 12px;
+  --radius-lg: 20px;
+  --font: 'Outfit', sans-serif;
+}
+
+[data-theme='dark'] {
+  --bg-body: #0f172a;
+  --bg-card: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  
+  --primary: #60a5fa;
+  --primary-hover: #93c5fd;
+  --primary-bg: rgba(59, 130, 246, 0.15);
+  
+  --rare-color: #fbbf24;
+  --rare-bg: rgba(245, 158, 11, 0.1);
+  --normal-color: #34d399;
+  --normal-bg: rgba(16, 185, 129, 0.1);
+}
+
+body {
+  font-family: var(--font);
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  line-height: 1.5;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.weather-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.weather-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+
+.weather-header p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+/* ─── FORECAST CARDS ─── */
+.forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 50px;
+  align-items: start;
+}
+
+.forecast-card {
+  background: #3273f6; /* Solid Blue as requested */
+  border-radius: 8px; /* Slightly sharper corners */
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  color: #ffffff;
+  border: none;
+}
+
+[data-theme='dark'] .forecast-card {
+  /* Keep it blue even in dark mode */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.fc-header {
+  padding: 15px 15px 5px 15px;
+  text-align: center;
+}
+
+.fc-label {
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.fc-body {
+  padding: 10px 20px 20px 20px;
+}
+
+.fc-empty {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 30px 0;
+  font-style: italic;
+}
+
+.weather-item {
+  margin-bottom: 20px;
+}
+
+.wi-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  margin-bottom: 10px;
+}
+
+.wi-icon {
+  font-size: 1.1rem;
+}
+
+.wi-type {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.wi-time {
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+/* Pokemon Box */
+.pkmn-box {
+  background: #f4f5f6;
+  border-radius: 4px;
+  color: #333;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.pkmn-headers {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 5px;
+  color: #ffffff; /* Headers are outside the white box in the image? No, wait, in the image "Thường" and "Cao cấp" are white text on the blue background! */
+}
+
+/* Wait, let's fix the pkmn-box structure to match the image exactly */
+.pkmn-container {
+  margin-top: 10px;
+}
+
+.pkmn-header-row {
+  display: flex;
+  justify-content: space-around;
+  color: #ffffff;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.pkmn-content-row {
+  background: #f1f2f3;
+  display: flex;
+  min-height: 60px;
+}
+
+.pkmn-col {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding: 5px;
+}
+
+.pkmn-col:first-child {
+  border-right: 1px solid #ddd;
+}
+
+.pkmn-img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+/* ─── FILTER SECTION ─── */
+.filter-section {
+  background: var(--bg-card);
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+  border: 1px solid var(--border);
+}
+
+.filter-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.filter-group {
+  margin-bottom: 24px;
+}
+
+.filter-label {
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  padding: 10px 18px;
+  border-radius: 30px;
+  background: transparent;
+  border: 2px solid var(--border);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font);
+}
+
+.chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* ─── FILTER RESULTS ─── */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.result-card {
+  background: var(--primary-bg);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  padding: 16px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.rc-icon {
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+.rc-info {
+  flex: 1;
+}
+
+.rc-date {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.rc-time {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.results-empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+  background: rgba(0,0,0,0.02);
+  border-radius: var(--radius);
+  font-style: italic;
+}
+
+/* ─── Loading ─── */
+.loading-container {
+  text-align: center;
+  padding: 60px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 992px) {
+  .forecast-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .forecast-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .weather-header h1 {
+    font-size: 2rem;
+  }
+  
+  .chip {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+  
+  .filter-section {
+    padding: 20px;
+  }
+}
