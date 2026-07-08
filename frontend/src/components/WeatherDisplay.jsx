@@ -18,14 +18,9 @@ const ICONS = {
 const WEATHER_TYPES = Object.keys(ICONS);
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 
-const getApiUrl = () => {
-  const envUrl = import.meta.env.VITE_API_URL;
-  if (import.meta.env.PROD && envUrl && !envUrl.includes('localhost')) {
-    return envUrl;
-  }
-  return 'http://localhost:5000';
-};
-const BASE_URL = getApiUrl();
+const BASE_URL = import.meta.env.DEV
+  ? 'http://localhost:5000'
+  : 'https://pokedaichienbackend.vercel.app';
 
 const WeatherDisplay = () => {
   const [data, setData] = useState([]);

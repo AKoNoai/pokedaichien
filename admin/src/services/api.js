@@ -1,14 +1,8 @@
 import axios from 'axios';
 
 const getApiUrl = () => {
-  const envUrl = import.meta.env.VITE_API_URL;
-  if (import.meta.env.PROD) {
-    if (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1')) {
-      return '';
-    }
-    return envUrl;
-  }
-  return envUrl || 'http://localhost:5000';
+  if (import.meta.env.DEV) return 'http://localhost:5000';
+  return 'https://pokedaichienbackend.vercel.app';
 };
 
 const API = axios.create({
