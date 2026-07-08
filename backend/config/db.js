@@ -9,7 +9,11 @@ const connectDB = async () => {
     isConnected = true;
     return;
   }
-  dns.setServers(['8.8.8.8', '0.0.0.0']);
+  try {
+    dns.setServers(['8.8.8.8', '8.8.4.4']);
+  } catch (_) {
+    // Some serverless environments don't allow overriding DNS
+  }
 
   try {
     await mongoose.connect(process.env.MONGODB_URI, {

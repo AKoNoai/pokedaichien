@@ -18,13 +18,18 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:5175',
-    process.env.FRONTEND_URL || '',
-    process.env.ADMIN_URL || ''
-  ].filter(Boolean),
+  origin: function (origin, callback) {
+    // Allow requests with no origin (curl, mobile apps, server-to-server)
+    if (!origin) return callback(null, true);
+    // Allow all *.vercel.app subdomains
+    if (origin.endsWith('.vercel.app')) return callback(null, true);
+    // Allow localhost for development
+    if (origin.startsWith('http://localhost:')) return callback(null, true);
+    // Allow explicitly configured origins
+    const allowed = [process.env.FRONTEND_URL, process.env.ADMIN_URL].filter(Boolean);
+    if (allowed.includes(origin)) return callback(null, true);
+    callback(null, false);
+  },
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
