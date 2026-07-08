@@ -369,7 +369,7 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
       {/* Mobile Header */}
       <div className="mobile-header">
         <div className="mobile-brand">
-          <span className="brand-icon">⛅</span>
+          <img src="/banner.png" alt="Logo" className="brand-icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
           <h2>Quản Trị</h2>
         </div>
         <button className="hamburger-btn" onClick={() => setIsSidebarOpen(true)}>
@@ -385,7 +385,7 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
       {/* Sidebar */}
       <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-brand">
-          <span className="brand-icon">🌤️</span>
+          <img src="/banner.png" alt="Logo" className="brand-icon" style={{ width: '40px', height: '40px', objectFit: 'contain', marginBottom: '10px' }} />
           <h2>Poke Đại Chiến</h2>
           <p>Hệ thống thời tiết</p>
         </div>
