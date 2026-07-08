@@ -65,12 +65,7 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 0' }}>
-          <div className="spinner"></div>
-          <p style={{ marginTop: '16px', fontWeight: 600, color: '#64748b' }}>Đang tải Banner...</p>
-        </div>
-      ) : banners.length > 0 ? (
+      {loading ? null : banners.length > 0 ? (
         <div className="banner-carousel">
           {banners.map((banner, index) => (
             <div key={banner._id} className={`banner-slide ${index === currentSlide ? 'active' : ''}`}>
@@ -106,12 +101,7 @@ const Home = () => {
       <div className="news-section">
         <h2 className="news-title">Tin tức</h2>
         
-        {newsLoading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 0' }}>
-            <div className="spinner"></div>
-            <p style={{ marginTop: '16px', fontWeight: 600, color: '#64748b' }}>Đang tải tin tức...</p>
-          </div>
-        ) : newsList.length > 0 ? (
+        {newsLoading ? null : newsList.length > 0 ? (
           <div className="news-list">
             {newsList.map(news => (
               <div 

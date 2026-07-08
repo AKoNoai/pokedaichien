@@ -24,7 +24,7 @@ function App() {
     <>
       {initialLoading && (
         <div className={`global-loading-screen ${fadeOut ? 'fade-out' : ''}`}>
-          <img src="/pikachuchay.gif" alt="Loading" className="loading-icon" style={{ width: '250px', height: '250px', objectFit: 'contain' }} />
+          <img src="/pikachuchay.gif" alt="Loading" className="loading-icon" style={{ width: '200px', height: '200px', objectFit: 'contain' }} />
           <div className="loading-text">Đang tải...</div>
         </div>
       )}
