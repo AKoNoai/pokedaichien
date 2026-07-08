@@ -77,7 +77,8 @@ body {
 .global-loading-screen {
   position: fixed;
   inset: 0;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
   display: flex;
   flex-direction: column;
   align-items: center;

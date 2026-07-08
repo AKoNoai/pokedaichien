@@ -7,7 +7,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
   gap: 0px;
   transition: opacity 0.5s ease;
 }
