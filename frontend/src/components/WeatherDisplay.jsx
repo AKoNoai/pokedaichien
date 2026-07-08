@@ -22,6 +22,20 @@ const BASE_URL = import.meta.env.DEV
   ? 'http://localhost:5000'
   : 'https://pokedaichienbackend.vercel.app';
 
+const resolveImageUrl = (url) => {
+  if (!url) return '';
+  let finalUrl = url;
+  // If production, replace hardcoded localhost with Vercel backend
+  if (import.meta.env.PROD && finalUrl.includes('localhost:5000')) {
+    finalUrl = finalUrl.replace(/https?:\/\/localhost:5000/g, 'https://pokedaichienbackend.vercel.app');
+  }
+  // Handle relative URLs
+  if (finalUrl.startsWith('/uploads')) {
+    finalUrl = `${BASE_URL}${finalUrl}`;
+  }
+  return finalUrl;
+};
+
 const WeatherDisplay = () => {
   const [data, setData] = useState([]);
   const [templates, setTemplates] = useState([]);
@@ -147,12 +161,12 @@ const WeatherDisplay = () => {
                     <div className="pkmn-content-row">
                       <div className="pkmn-col">
                         {item.normalPokemons && item.normalPokemons.map((url, i) => (
-                          <img key={i} src={url} alt="Normal" className="pkmn-img" />
+                          <img key={i} src={resolveImageUrl(url)} alt="Normal" className="pkmn-img" />
                         ))}
                       </div>
                       <div className="pkmn-col">
                         {item.rarePokemons && item.rarePokemons.map((url, i) => (
-                          <img key={i} src={url} alt="Rare" className="pkmn-img" />
+                          <img key={i} src={resolveImageUrl(url)} alt="Rare" className="pkmn-img" />
                         ))}
                       </div>
                     </div>
@@ -190,12 +204,12 @@ const WeatherDisplay = () => {
                       <div className="pkmn-content-row">
                         <div className="pkmn-col">
                           {item.normalPokemons && item.normalPokemons.map((url, i) => (
-                            <img key={i} src={url} alt="Normal" className="pkmn-img" />
+                            <img key={i} src={resolveImageUrl(url)} alt="Normal" className="pkmn-img" />
                           ))}
                         </div>
                         <div className="pkmn-col">
                           {item.rarePokemons && item.rarePokemons.map((url, i) => (
-                            <img key={i} src={url} alt="Rare" className="pkmn-img" />
+                            <img key={i} src={resolveImageUrl(url)} alt="Rare" className="pkmn-img" />
                           ))}
                         </div>
                       </div>
@@ -234,12 +248,12 @@ const WeatherDisplay = () => {
                       <div className="pkmn-content-row">
                         <div className="pkmn-col">
                           {item.normalPokemons && item.normalPokemons.map((url, i) => (
-                            <img key={i} src={url} alt="Normal" className="pkmn-img" />
+                            <img key={i} src={resolveImageUrl(url)} alt="Normal" className="pkmn-img" />
                           ))}
                         </div>
                         <div className="pkmn-col">
                           {item.rarePokemons && item.rarePokemons.map((url, i) => (
-                            <img key={i} src={url} alt="Rare" className="pkmn-img" />
+                            <img key={i} src={resolveImageUrl(url)} alt="Rare" className="pkmn-img" />
                           ))}
                         </div>
                       </div>
