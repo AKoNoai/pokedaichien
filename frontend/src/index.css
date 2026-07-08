@@ -28,6 +28,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: 1px;
+  margin-top: -60px;
 }
 
 @keyframes bounce {

@@ -105,6 +105,7 @@ body {
   color: #000000;
   letter-spacing: 1px;
   animation: pulseText 1.5s infinite;
+  margin-top: -60px;
 }
 
 @keyframes pulseText {
