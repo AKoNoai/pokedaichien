@@ -97,10 +97,11 @@ const WeatherDisplay = () => {
   dayAfter.setDate(dayAfter.getDate() + 2);
 
   const getForecastData = (targetDate) => {
-    const targetDateStr = targetDate.toISOString().split('T')[0];
+    const targetMonth = targetDate.getMonth();
+    const targetDateNum = targetDate.getDate();
     return data.filter(item => {
-      const itemDateStr = new Date(item.date).toISOString().split('T')[0];
-      return itemDateStr === targetDateStr;
+      const itemDate = new Date(item.date);
+      return itemDate.getMonth() === targetMonth && itemDate.getDate() === targetDateNum;
     });
   };
 
@@ -113,7 +114,6 @@ const WeatherDisplay = () => {
   const filteredData = data.filter(item => {
     const itemDate = new Date(item.date);
     return itemDate.getMonth() + 1 === selectedMonth &&
-      itemDate.getFullYear() === currentYear &&
       item.weatherType === selectedType;
   });
 

@@ -77,7 +77,7 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [filterMonth, setFilterMonth] = useState('');
+  const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toString());
   
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -314,8 +314,20 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
   const handleOpenAdd = () => {
     setEditingItem(null);
     const defaults = getDefaultsForWeather('Mưa');
+    
+    let defaultDateStr = new Date().toISOString().split('T')[0];
+    if (filterMonth !== '') {
+      const currentMonth = new Date().getMonth() + 1;
+      const selectedMonthInt = parseInt(filterMonth);
+      if (selectedMonthInt !== currentMonth) {
+        const year = new Date().getFullYear();
+        const monthStr = selectedMonthInt.toString().padStart(2, '0');
+        defaultDateStr = `${year}-${monthStr}-01`;
+      }
+    }
+
     setFormData({
-      date: new Date().toISOString().split('T')[0],
+      date: defaultDateStr,
       weathers: [{
         weatherType: 'Mưa',
         startTime: '00:00',
