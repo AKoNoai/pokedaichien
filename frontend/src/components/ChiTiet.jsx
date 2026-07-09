@@ -62,14 +62,14 @@ const ChiTiet = () => {
 
         {/* Small Pokemons Box */}
         <div style={{ background: '#f8f9fa', borderRadius: '4px', padding: '15px', display: 'flex', minHeight: '100px', marginBottom: '15px' }}>
-          <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', alignContent: 'center' }}>
+          <div className="chitiet-small-pokemons-col">
             {selectedResult.normalPokemons && selectedResult.normalPokemons.map((url, i) => (
-              <img key={i} src={resolveImageUrl(url)} alt="Normal" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
+              <img key={i} src={resolveImageUrl(url)} alt="Normal" style={{ width: '60px', height: '60px', objectFit: 'contain', flexShrink: 0 }} />
             ))}
           </div>
-          <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', alignContent: 'center' }}>
+          <div className="chitiet-small-pokemons-col">
             {selectedResult.rarePokemons && selectedResult.rarePokemons.map((url, i) => (
-              <img key={i} src={resolveImageUrl(url)} alt="Rare" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
+              <img key={i} src={resolveImageUrl(url)} alt="Rare" style={{ width: '60px', height: '60px', objectFit: 'contain', flexShrink: 0 }} />
             ))}
           </div>
         </div>
@@ -79,7 +79,7 @@ const ChiTiet = () => {
           const tmpl = templates?.find(t => t.weatherType === selectedResult.weatherType);
           if (tmpl && (tmpl.normalImage || tmpl.rareImage)) {
             return (
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <div className="chitiet-template-images">
                 <div style={{ flex: 1 }}>
                   {tmpl.normalImage ? (
                     <img src={resolveImageUrl(tmpl.normalImage)} alt="Normal Template" style={{ width: '100%', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.2)', background: 'white' }} />

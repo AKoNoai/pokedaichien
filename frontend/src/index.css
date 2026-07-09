@@ -424,3 +424,34 @@ body {
     padding: 20px;
   }
 }
+
+/* ─── ChiTiet Custom ─── */
+.chitiet-template-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  justify-content: center;
+}
+
+.chitiet-small-pokemons-col {
+  flex: 1;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.chitiet-small-pokemons-col::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for cleaner look */
+}
+
+@media (max-width: 768px) {
+  .chitiet-container {
+    padding: 10px !important;
+  }
+  .weather-item-full {
+    padding: 10px !important;
+  }
+}
