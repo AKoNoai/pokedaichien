@@ -736,13 +736,12 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
 
             {/* Banner Modal */}
             {showBannerModal && (
-              <div className="modal-overlay">
-                <div className="modal-content" style={{ maxWidth: '500px' }}>
-                  <div className="modal-header">
-                    <h2>{editingBanner ? 'Cập nhật Banner' : 'Thêm Banner Mới'}</h2>
-                    <button className="btn-close" onClick={() => setShowBannerModal(false)}><i className="fa-solid fa-xmark"></i></button>
-                  </div>
-                  <form onSubmit={handleSubmitBanner} className="modal-body">
+              <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowBannerModal(false)}>
+                <div className="modal-box" style={{ maxWidth: '500px' }}>
+                  <h3 className="modal-title">
+                    <i className="fa-solid fa-image"></i> {editingBanner ? 'Cập nhật Banner' : 'Thêm Banner Mới'}
+                  </h3>
+                  <form onSubmit={handleSubmitBanner}>
                     <div className="form-group">
                       <label>Ảnh Banner</label>
                       {bannerForm.imageUrl && (
@@ -750,7 +749,7 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
                           <img src={resolveImageUrl(bannerForm.imageUrl)} alt="Banner preview" style={{ width: '100%', height: 'auto', maxHeight: '150px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border)' }} />
                         </div>
                       )}
-                      <input type="file" accept="image/*" onChange={handleBannerImageUpload} className="form-control" style={{ padding: '8px' }} />
+                      <input type="file" accept="image/*" onChange={handleBannerImageUpload} style={{ padding: '8px' }} />
                       {!bannerForm.imageUrl && <p style={{ fontSize: '0.85rem', color: 'red', marginTop: '5px' }}>Vui lòng tải ảnh lên</p>}
                     </div>
 
@@ -758,7 +757,6 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
                       <label>Đường dẫn liên kết (Tùy chọn)</label>
                       <input
                         type="text"
-                        className="form-control"
                         placeholder="https://..."
                         value={bannerForm.link}
                         onChange={(e) => setBannerForm({...bannerForm, link: e.target.value})}
@@ -770,24 +768,23 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
                         <label>Thứ tự hiển thị</label>
                         <input
                           type="number"
-                          className="form-control"
                           value={bannerForm.order}
                           onChange={(e) => setBannerForm({...bannerForm, order: Number(e.target.value)})}
                         />
                       </div>
-                      <div className="form-group" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px', paddingTop: '30px' }}>
+                      <div className="form-group" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px', paddingTop: '28px' }}>
                         <input
                           type="checkbox"
                           id="bannerActive"
                           checked={bannerForm.isActive}
                           onChange={(e) => setBannerForm({...bannerForm, isActive: e.target.checked})}
-                          style={{ width: '20px', height: '20px' }}
+                          style={{ width: '18px', height: '18px', cursor: 'pointer' }}
                         />
-                        <label htmlFor="bannerActive" style={{ margin: 0, cursor: 'pointer' }}>Hiển thị Banner</label>
+                        <label htmlFor="bannerActive" style={{ margin: 0, cursor: 'pointer', textTransform: 'none', fontSize: '14px' }}>Hiển thị Banner</label>
                       </div>
                     </div>
 
-                    <div className="modal-footer">
+                    <div className="modal-actions">
                       <button type="button" className="btn btn-ghost" onClick={() => setShowBannerModal(false)}>Hủy</button>
                       <button type="submit" className="btn btn-primary" disabled={isSubmitting || !bannerForm.imageUrl}>
                         {isSubmitting ? <><i className="fa-solid fa-spinner fa-spin"></i> Đang lưu...</> : 'Lưu Banner'}
@@ -931,18 +928,16 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
 
             {/* News Modal */}
             {showNewsModal && (
-              <div className="modal-overlay">
-                <div className="modal-content" style={{ maxWidth: '600px' }}>
-                  <div className="modal-header">
-                    <h2>{editingNews ? 'Cập nhật Bản Tin' : 'Thêm Bản Tin Mới'}</h2>
-                    <button className="btn-close" onClick={() => setShowNewsModal(false)}><i className="fa-solid fa-xmark"></i></button>
-                  </div>
-                  <form onSubmit={handleSubmitNews} className="modal-body">
+              <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowNewsModal(false)}>
+                <div className="modal-box" style={{ maxWidth: '600px' }}>
+                  <h3 className="modal-title">
+                    <i className="fa-solid fa-newspaper"></i> {editingNews ? 'Cập nhật Bản Tin' : 'Thêm Bản Tin Mới'}
+                  </h3>
+                  <form onSubmit={handleSubmitNews}>
                     <div className="form-group">
                       <label>Tiêu đề</label>
                       <input
                         type="text"
-                        className="form-control"
                         required
                         value={newsForm.title}
                         onChange={(e) => setNewsForm({...newsForm, title: e.target.value})}
@@ -952,7 +947,6 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
                     <div className="form-group">
                       <label>Nội dung</label>
                       <textarea
-                        className="form-control"
                         required
                         rows="6"
                         value={newsForm.content}
@@ -967,7 +961,7 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
                           <img src={resolveImageUrl(newsForm.imageUrl)} alt="News preview" style={{ width: '100%', height: 'auto', maxHeight: '150px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border)' }} />
                         </div>
                       )}
-                      <input type="file" accept="image/*" onChange={handleNewsImageUpload} className="form-control" style={{ padding: '8px' }} />
+                      <input type="file" accept="image/*" onChange={handleNewsImageUpload} style={{ padding: '8px' }} />
                     </div>
 
                     <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingTop: '10px' }}>
@@ -976,12 +970,12 @@ export default function Dashboard({ token, onLogout, theme, setTheme }) {
                         id="newsActive"
                         checked={newsForm.isActive}
                         onChange={(e) => setNewsForm({...newsForm, isActive: e.target.checked})}
-                        style={{ width: '20px', height: '20px' }}
+                        style={{ width: '18px', height: '18px', cursor: 'pointer' }}
                       />
-                      <label htmlFor="newsActive" style={{ margin: 0, cursor: 'pointer' }}>Hiển thị bản tin</label>
+                      <label htmlFor="newsActive" style={{ margin: 0, cursor: 'pointer', textTransform: 'none', fontSize: '14px' }}>Hiển thị Bản Tin</label>
                     </div>
 
-                    <div className="modal-footer">
+                    <div className="modal-actions">
                       <button type="button" className="btn btn-ghost" onClick={() => setShowNewsModal(false)}>Hủy</button>
                       <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
                         {isSubmitting ? <><i className="fa-solid fa-spinner fa-spin"></i> Đang lưu...</> : 'Lưu Bản Tin'}
